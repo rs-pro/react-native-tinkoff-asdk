@@ -1,0 +1,43 @@
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.3.1'
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.facebook.react:react-native:+'
+
+    implementation 'ru.tinkoff.acquiring:ui:1.5.1'
+    implementation 'ru.tinkoff.acquiring:card-io:1.5.1'
+    //implementation 'com.android.support:support-v4:23.0.1'
+
+    //implementation 'ru.tinkoff.acquiring:ui:$latestVersion'
+    //implementation 'ru.tinkoff.acquiring:card-io:$latestVersion'
+}
+
