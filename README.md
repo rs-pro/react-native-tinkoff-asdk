@@ -59,9 +59,6 @@ const payment = TinkoffASDK.Pay({
     PhoneRequired: false,
     Environment: "TEST" // "SANDBOX", "PRODUCTION"
   },
-  ApplePayParams: {
-    MerchantId: "merchant.tcsbank.ApplePayTestMerchantId",
-  },
   Taxation: "usn_income",
   Items: [
     {
@@ -113,5 +110,9 @@ https://github.com/TinkoffCreditSystems/tinkoff-asdk-ios#%D0%BF%D1%80%D0%B8%D0%B
 
 ## License
 
-(c) 2019 glebtv for rocketscience.pro
+Код обертки - (c) 2019 glebtv for rocketscience.pro - MIT лицензия
 
+Использует файлы из ASDK Тиньков (конкретно ASDKCardIOScanner) на них действует его лицензия:
+
+https://github.com/TinkoffCreditSystems/tinkoff-asdk-ios/blob/master/LICENSE.rtf
+https://github.com/TinkoffCreditSystems/tinkoff-asdk-android/blob/master/LICENSE.TXT
