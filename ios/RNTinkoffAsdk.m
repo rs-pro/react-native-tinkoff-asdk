@@ -90,6 +90,8 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
       cardId: [options objectForKey:@"CardID"]
       email: [options objectForKey:@"email"]
       customerKey: [options objectForKey:@"customerKey"]
+      recurrent: NO
+      makeCharge: YES
       additionalPaymentData: [options objectForKey:@"extraData"]
       receiptData: [options objectForKey:@"Items"]
       success: ^(ASDKPaymentInfo *paymentInfo) { resolve(paymentInfo); }
@@ -122,6 +124,8 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
       email: [options objectForKey:@"email"]
       appleMerchantId: [options objectForKey:@"appleMerchantId"]
       customerKey: [options objectForKey:@"customerKey"]
+      recurrent: NO
+      makeCharge: YES
       additionalPaymentData: [options objectForKey:@"extraData"]
       receiptData: [options objectForKey:@"Items"]
       success: ^(ASDKPaymentInfo *paymentInfo) { resolve(paymentInfo); }
