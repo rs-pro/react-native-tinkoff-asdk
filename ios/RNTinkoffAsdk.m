@@ -125,11 +125,11 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
 		shippingContact.emailAddress = [options objectForKey:@"Email"];
 		shippingContact.phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:[options objectForKey:@"Phone"]];
 		CNMutablePostalAddress *postalAddress = [[CNMutablePostalAddress alloc] init];
-		[postalAddress setStreet:[options objectForKey:@"Street"]];
-		[postalAddress setCountry:[options objectForKey:@"Country"]];
-		[postalAddress setCity:[options objectForKey:@"City"]];
-		[postalAddress setPostalCode:[options objectForKey:@"PostalCode"]];
-		[postalAddress setISOCountryCode:@"643"];
+		[postalAddress setStreet:[shipping objectForKey:@"Street"]];
+		[postalAddress setCountry:[shipping objectForKey:@"Country"]];
+		[postalAddress setCity:[shipping objectForKey:@"City"]];
+		[postalAddress setPostalCode:[shipping objectForKey:@"PostalCode"]];
+		[postalAddress setISOCountryCode:[shipping objectForKey:@"ISOCountryCode"]];
 		shippingContact.postalAddress = [postalAddress copy];
 
     [form payWithApplePayFromViewController:rootViewController
