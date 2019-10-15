@@ -41,7 +41,7 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)r
 
 	ASDKStringKeyCreator *stringKeyCreator = [[ASDKStringKeyCreator alloc] initWithPublicKeyString:publicKey];
 
-	*acquiringSdk = [ASDKAcquiringSdk acquiringSdkWithTerminalKey:terminalKey
+	acquiringSdk = [ASDKAcquiringSdk acquiringSdkWithTerminalKey:terminalKey
                                  payType:@"О"
 																 password:password
 															   publicKeyDataSource:stringKeyCreator];
