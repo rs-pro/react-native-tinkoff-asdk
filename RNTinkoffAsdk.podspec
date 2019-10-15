@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "RNTinkoffAsdk"
-  s.version      = "1.0.0"
+  s.version      = "0.1.0"
   s.summary      = "RNTinkoffAsdk"
   s.description  = <<-DESC
                   tinkoff acquiring sdk for react natives
@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.author             = { "author" => "glebtv@gmail.com" }
   s.platform     = :ios, "9.0"
   s.source       = { :git => "https://github.com/author/RNTinkoffAsdk.git", :tag => "master" }
-  s.source_files  = "RNTinkoffAsdk/**/*.{h,m}"
+  s.source_files  = "ios/**/*.{h,m}"
   s.requires_arc = true
 
 
