@@ -8,4 +8,4 @@
 @interface RNTinkoffAsdk : NSObject <RCTBridgeModule>
 
 @end
-  
+

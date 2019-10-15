@@ -5,6 +5,12 @@
 #import <ASDKUI/ASDKUI.h>
 #import "ASDKCardIOScanner.h"
 
+#if __has_include("RCTConvert.h")
+#import "RCTConvert.h"
+#else
+#import <React/RCTConvert.h>
+#endif
+
 @implementation RNTinkoffAsdk
 
 - (dispatch_queue_t)methodQueue
@@ -13,18 +19,20 @@
 }
 RCT_EXPORT_MODULE()
 
-ASDKAcquiringSdk *acquiringSdk
+ASDKAcquiringSdk *acquiringSdk;
 
 RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
+  NSError* error = nil;
+
   if (![options objectForKey:@"terminalKey"]) {
-      reject(@"Не передан terminalKey");
+      reject(@"init_error", @"Не передан terminalKey", error);
   }
   if (![options objectForKey:@"password"]) {
-      reject(@"Не передан password");
+      reject(@"init_error", @"Не передан password", error);
   }
   if (![options objectForKey:@"publicKey"]) {
-      reject(@"Не передан publicKey");
+      reject(@"init_error", @"Не передан publicKey", error);
   }
 
   NSString *terminalKey = [RCTConvert NSString:options[@"terminalKey"]];
@@ -59,8 +67,10 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
+  NSError* error = nil;
+
   if (acquiringSdk == nil) {
-      reject("Не выполнен init");
+      reject(@"init_not_done", "Не выполнен init", error);
       return
   }
 
@@ -82,7 +92,7 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
       additionalPaymentData: [options objectForKey:@"extraData"]
       receiptData: [options objectForKey:@"Items"]
       success: ^(ASDKPaymentInfo *paymentInfo) { resolve(paymentInfo); }
-      cancelled: ^{ reject(NULL); }
+      cancelled: ^{ reject(@"payment_cancelled", "Платеж отменен", error); }
       error: ^(ASDKAcquringSdkError *error) { reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
     ];
 }
@@ -91,8 +101,10 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
+  NSError* error = nil;
+
   if (acquiringSdk == nil) {
-      reject("Не выполнен init");
+      reject(@"init_not_done", "Не выполнен init", error);
       return
   }
 
@@ -112,7 +124,7 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
       additionalPaymentData: [options objectForKey:@"extraData"]
       receiptData: [options objectForKey:@"Items"]
       success: ^(ASDKPaymentInfo *paymentInfo) { resolve(paymentInfo); }
-      cancelled: ^{ reject(NULL); }
+      cancelled: ^{ reject(@"payment_cancelled", "Платеж отменен", error); }
       error: ^(ASDKAcquringSdkError *error) { reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
     ];
 }
