@@ -45,6 +45,7 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)r
 																		  password:[ASDKTestSettings password]
 															   publicKeyDataSource:stringKeyCreator];
 
+  bool isTestMode = false;
   if (![options objectForKey:@"testMode"]) {
     isTestMode = [RCTConvert BOOL:options[@"testMode"]];
   }
