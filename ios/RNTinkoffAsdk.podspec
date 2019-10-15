@@ -16,11 +16,10 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
 
-  s.dependency "React"
+  s.dependency "React"ß
 
   s.dependency 'CardIO'
-  s.dependency 'ASDKCore', :podspec =>  "https://raw.githubusercontent.com/TinkoffCreditSystems/tinkoff-asdk-ios/master/ASDKCore.podspec"
-  s.dependency 'ASDKUI', :podspec =>  "https://raw.githubusercontent.com/TinkoffCreditSystems/tinkoff-asdk-ios/master/ASDKUI"
+  s.dependency 'ASDKCore'
+  s.dependency 'ASDKUI'
 
 end
-
