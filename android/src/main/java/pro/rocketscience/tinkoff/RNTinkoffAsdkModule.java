@@ -113,6 +113,9 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
     if (isTestMode) {
       Journal.setDebug(true);
       Journal.setDeveloperMode(true);
+    } else {
+      Journal.setDebug(false);
+      Journal.setDeveloperMode(false);
     }
   }
 

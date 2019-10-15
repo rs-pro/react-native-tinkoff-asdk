@@ -42,6 +42,7 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)r
 	ASDKStringKeyCreator *stringKeyCreator = [[ASDKStringKeyCreator alloc] initWithPublicKeyString:publicKey];
 
 	*acquiringSdk = [ASDKAcquiringSdk acquiringSdkWithTerminalKey:terminalKey
+                                 payType:@"О"
 																 password:password
 															   publicKeyDataSource:stringKeyCreator];
 
@@ -52,6 +53,9 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)r
   if (isTestMode) {
     [acquiringSdk setDebug:YES];
     [acquiringSdk setTestDomain:YES];
+  } else {
+    [acquiringSdk setDebug:NO];
+    [acquiringSdk setTestDomain:NO];
   }
 	[acquiringSdk setLogger:nil];
 }
