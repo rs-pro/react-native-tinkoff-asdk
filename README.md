@@ -10,6 +10,13 @@
 
 `$ react-native link react-native-tinkoff-asdk`
 
+For IOS, add
+```
+pod 'ASDKCore', :podspec =>  "https://raw.githubusercontent.com/TinkoffCreditSystems/tinkoff-asdk-ios/master/ASDKCore.podspec"
+pod 'ASDKUI', :podspec =>  "https://raw.githubusercontent.com/TinkoffCreditSystems/tinkoff-asdk-ios/master/ASDKUI.podspec"
+```
+to ios/Profile and run pod install
+
 ### Proguard
 
 ```

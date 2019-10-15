@@ -98,12 +98,9 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
 
     UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
 
-
     ASDKPaymentFormStarter * form = [ASDKPaymentFormStarter paymentFormStarterWithAcquiringSdk:acquiringSdk];
 
-    form.cardScanner = [ASDKCardIOScanner scanner];
-
-    [form presentPaymentFormFromViewController:rootViewController
+    [form payWithApplePayFromViewController:rootViewController
       orderId: [options objectForKey:@"OrderID"]
       amount: [options objectForKey:@"Amount"]
       title: [options objectForKey:@"PaymentName"]
