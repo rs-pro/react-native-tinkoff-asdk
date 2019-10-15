@@ -93,7 +93,7 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
       additionalPaymentData: [options objectForKey:@"extraData"]
       receiptData: [options objectForKey:@"Items"]
       success: ^(ASDKPaymentInfo *paymentInfo) { resolve(paymentInfo); }
-      cancelled: ^{ reject(@"payment_cancelled", "Платеж отменен", error); }
+      cancelled: ^{ reject(@"payment_cancelled", @"Платеж отменен", error); }
       error: ^(ASDKAcquringSdkError *error) { reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
     ];
 }
@@ -125,7 +125,7 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
       additionalPaymentData: [options objectForKey:@"extraData"]
       receiptData: [options objectForKey:@"Items"]
       success: ^(ASDKPaymentInfo *paymentInfo) { resolve(paymentInfo); }
-      cancelled: ^{ reject(@"payment_cancelled", "Платеж отменен", error); }
+      cancelled: ^{ reject(@"payment_cancelled", @"Платеж отменен", error); }
       error: ^(ASDKAcquringSdkError *error) { reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
     ];
 }
