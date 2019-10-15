@@ -196,7 +196,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
           isRecurrent,
           useSafeKeyboard
         )
-        .setData(options.getMap("extraData"))
+        .setData(options.getMap("ExtraData"))
         .setCameraCardScanner(new CameraCardIOScanner())
         .setReceipt(createReceipt(options.getArray("Items"), options.getString("Email"), options.getString("Taxation")))
         .setGooglePayParams(googlePayParams)

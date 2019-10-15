@@ -39,10 +39,10 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)r
   NSString *password = [RCTConvert NSString:options[@"password"]];
   NSString *publicKey = [RCTConvert NSString:options[@"publicKey"]];
 
-	ASDKStringKeyCreator *stringKeyCreator = [[ASDKStringKeyCreator alloc] initWithPublicKeyString:[ASDKTestSettings publicKey]];
+	ASDKStringKeyCreator *stringKeyCreator = [[ASDKStringKeyCreator alloc] initWithPublicKeyString:publicKey];
 
 	*acquiringSdk = [ASDKAcquiringSdk acquiringSdkWithTerminalKey:terminalKey
-																		  password:[ASDKTestSettings password]
+																 password:password
 															   publicKeyDataSource:stringKeyCreator];
 
   bool isTestMode = false;
@@ -68,12 +68,12 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  NSError* error = nil;
+    NSError* error = nil;
 
-  if (acquiringSdk == nil) {
-      reject(@"init_not_done", "Не выполнен init", error);
-      return
-  }
+    if (acquiringSdk == nil) {
+        reject(@"init_not_done", @"Не выполнен init", error);
+        return;
+    };
 
     UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
 
@@ -88,11 +88,11 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
       title: [options objectForKey:@"PaymentName"]
       description: [options objectForKey:@"PaymentDesc"]
       cardId: [options objectForKey:@"CardID"]
-      email: [options objectForKey:@"email"]
-      customerKey: [options objectForKey:@"customerKey"]
+      email: [options objectForKey:@"Email"]
+      customerKey: [options objectForKey:@"CustomerKey"]
       recurrent: NO
       makeCharge: YES
-      additionalPaymentData: [options objectForKey:@"extraData"]
+      additionalPaymentData: [options objectForKey:@"ExtraData"]
       receiptData: [options objectForKey:@"Items"]
       success: ^(ASDKPaymentInfo *paymentInfo) { resolve(paymentInfo); }
       cancelled: ^{ reject(@"payment_cancelled", @"Платеж отменен", error); }
@@ -106,28 +106,43 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
 {
   NSError* error = nil;
 
-  if (acquiringSdk == nil) {
-      reject(@"init_not_done", "Не выполнен init", error);
-      return
-  }
+    if (acquiringSdk == nil) {
+        reject(@"init_not_done", @"Не выполнен init", error);
+        return;
+    };
 
     UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
 
     ASDKPaymentFormStarter * form = [ASDKPaymentFormStarter paymentFormStarterWithAcquiringSdk:acquiringSdk];
 
+    NSDictionary *shipping = [options objectForKey:@"Shipping"]
+
+		PKContact *shippingContact = [[PKContact alloc] init];
+		shippingContact.emailAddress = ;
+		shippingContact.phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:[options objectForKey:@"Phone"]];
+		CNMutablePostalAddress *postalAddress = [[CNMutablePostalAddress alloc] init];
+		[postalAddress setStreet:[options objectForKey:@"Street"]];
+		[postalAddress setCountry:[options objectForKey:@"Country"]];
+		[postalAddress setCity:[options objectForKey:@"City"]];
+		[postalAddress setPostalCode:[options objectForKey:@"PostalCode"]];
+		[postalAddress setISOCountryCode:@"643"];
+		shippingContact.postalAddress = [postalAddress copy];
+
     [form payWithApplePayFromViewController:rootViewController
-      orderId: [options objectForKey:@"OrderID"]
       amount: [options objectForKey:@"Amount"]
-      title: [options objectForKey:@"PaymentName"]
+      orderId: [options objectForKey:@"OrderID"]
       description: [options objectForKey:@"PaymentDesc"]
-      cardId: [options objectForKey:@"CardID"]
+      customerKey: [options objectForKey:@"customerKey"]
+      sendEmail: YES
       email: [options objectForKey:@"email"]
       appleMerchantId: [options objectForKey:@"appleMerchantId"]
-      customerKey: [options objectForKey:@"customerKey"]
-      recurrent: NO
-      makeCharge: YES
+      shippingMethods:nil
+      shippingContact:shippingContact
+      shippingEditableFields:PKAddressFieldPostalAddress|PKAddressFieldName|PKAddressFieldEmail|PKAddressFieldPhone //PKAddressFieldNone
       additionalPaymentData: [options objectForKey:@"extraData"]
       receiptData: [options objectForKey:@"Items"]
+      shopsData:nil
+      shopsReceiptsData:nil
       success: ^(ASDKPaymentInfo *paymentInfo) { resolve(paymentInfo); }
       cancelled: ^{ reject(@"payment_cancelled", @"Платеж отменен", error); }
       error: ^(ASDKAcquringSdkError *error) { reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }

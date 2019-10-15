@@ -53,6 +53,7 @@ const payment = TinkoffASDK.Pay({
   CustomerKey: "testCustomerKey1@gmail.com",
   IsRecurrent: false,                // флаг определяющий является ли платеж рекуррентным [1]
   UseSafeKeyboard: true,             // флаг использования безопасной клавиатуры [2]
+  ExtraData: {},
   GooglePayParams: {
     MerchantName: "test",
     AddressRequired: false,
@@ -92,8 +93,16 @@ payment.then((r) => {
 const hasApplePay = await TinkoffASDK.isPayWithAppleAvailable()
 if (hasApplePay) {
   const payment = TinkoffASDK.ApplePay({
+    appleMerchantId: "....",
+    Phone: "+74956481000",
+    Shipping: {
+      Street: "Головинское шоссе, дом 5, корп. 1",
+      Country: "Россия",
+      City: "Москва",
+      PostalCode: "125212",
+      ISOCountryCode: "643",
+    }
     // Все то же что в простом Pay
-    appleMerchantId: "...."
   })
 }
 ```
