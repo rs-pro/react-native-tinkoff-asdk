@@ -4,11 +4,10 @@ Pod::Spec.new do |s|
   s.version      = "1.0.0"
   s.summary      = "RNTinkoffAsdk"
   s.description  = <<-DESC
-                  RNTinkoffAsdk
+                  tinkoff acquiring sdk for react natives
                    DESC
-  s.homepage     = ""
-  s.license      = "MIT"
-  s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
+  s.homepage     = "https://github.com/rs-pro/react-native-tinkoff-asdk"
+  s.license      = { :type => "MIT", :file => "LICENSE" }
   s.author             = { "author" => "glebtv@gmail.com" }
   s.platform     = :ios, "9.0"
   s.source       = { :git => "https://github.com/author/RNTinkoffAsdk.git", :tag => "master" }
@@ -16,7 +15,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
 
-  s.dependency "React"ß
+  s.dependency "React"
 
   s.dependency 'CardIO'
   s.dependency 'ASDKCore'
