@@ -119,10 +119,10 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
 
     ASDKPaymentFormStarter * form = [ASDKPaymentFormStarter paymentFormStarterWithAcquiringSdk:acquiringSdk];
 
-    NSDictionary *shipping = [options objectForKey:@"Shipping"]
+    NSDictionary *shipping = [options objectForKey:@"Shipping"];
 
 		PKContact *shippingContact = [[PKContact alloc] init];
-		shippingContact.emailAddress = ;
+		shippingContact.emailAddress = [options objectForKey:@"Email"];
 		shippingContact.phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:[options objectForKey:@"Phone"]];
 		CNMutablePostalAddress *postalAddress = [[CNMutablePostalAddress alloc] init];
 		[postalAddress setStreet:[options objectForKey:@"Street"]];
@@ -143,6 +143,7 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
       shippingMethods:nil
       shippingContact:shippingContact
       shippingEditableFields:PKAddressFieldPostalAddress|PKAddressFieldName|PKAddressFieldEmail|PKAddressFieldPhone //PKAddressFieldNone
+      recurrent: NO
       additionalPaymentData: [options objectForKey:@"extraData"]
       receiptData: [options objectForKey:@"Items"]
       shopsData:nil
