@@ -20,7 +20,7 @@
 ```javascript
 import TinkoffASDK from 'react-native-tinkoff-asdk';
 
-const payment = TinkoffASDK.Payment({
+TinkoffASDK.init({
   // Тестовые данные из https://github.com/TinkoffCreditSystems/tinkoff-asdk-android/blob/9c7d1727f2ba5d715f240e0be6e4a0fd8b88a1db/sample/src/main/java/ru/tinkoff/acquiring/sample/SessionParams.java
   terminalKey: "TestSDK",
   password: "12345678",
@@ -30,8 +30,10 @@ const payment = TinkoffASDK.Payment({
     "AO8pxJBAxFojioVu422RWaQvoOMuZzhqUEpxA9T62lN8t3jj9QfHXaL4Ht8kRaa2JlaURtPJB5iB\n" +
     "M+4pBDnqObNS5NFcXOxloZX4+M8zXaFh70jqWfiCzjyhaFg3rTPE2ClseOdS7DLwfB2kNP3K0GuP\n" +
     "uLzsMwIDAQAB",
-  testMode: true,
+  testMode: true
+});
 
+const payment = TinkoffASDK.Pay({
   OrderID: "1",                      // ID заказа в вашей системе
   Amount: 32345,                     // сумма для оплаты (в копейках)
   PaymentName: "НАЗВАНИЕ ПЛАТЕЖА",   // название платежа, видимое пользователю
@@ -53,21 +55,21 @@ const payment = TinkoffASDK.Payment({
   ApplePayParams: {
     MerchantId: "merchant.tcsbank.ApplePayTestMerchantId",
   },
-  Taxation: "USN_INCOME",
+  Taxation: "usn_income",
   Items: [
     {
       Name: "test 1",
       Price: 10000, // В копейках (100 рублей)
       Quantity: 2,
       Amount: 20000, // В копейках (200 рублей)
-      Tax: "NONE",
+      Tax: "none",
     },
     {
       Name: "test 2",
       Price: 12345,
       Quantity: 1,
       Amount: 12345,
-      Tax: "NONE",
+      Tax: "none",
     }
   ]
 })
@@ -77,6 +79,19 @@ payment.then((r) => {
 }).catch((e) => {
   console.error(e)
 })
+
+// Оплата через Google Pay:
+// Ничего делать не нужно, пользователь может выбрать оплату google pay на экране оплаты
+
+// Оплата через Apple Pay:
+// Только отдельным методом, вот так:
+const hasApplePay = await TinkoffASDK.isPayWithAppleAvailable()
+if (hasApplePay) {
+  const payment = TinkoffASDK.ApplePay({
+    // Все то же что в простом Pay
+    appleMerchantId: "...."
+  })
+}
 ```
 
 ### Google Pay

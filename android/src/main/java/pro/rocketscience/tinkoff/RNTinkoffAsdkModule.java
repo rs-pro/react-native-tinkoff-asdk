@@ -32,6 +32,8 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   private final ReactApplicationContext reactContext;
   private Promise paymentPromise;
   private static final int REQUEST_CODE_PAY = 1;
+  private boolean isTestMode = false;
+  private PayFormStarter payFormStarter;
 
   public RNTinkoffAsdkModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -81,14 +83,9 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   }
 
   @ReactMethod
-  public void Payment(
-    ReadableMap options,
-    final Promise promise
-  ) {
+  public void init(ReadableMap options, final Promise promise) {
     rejectPromise("Запущен новый процесс оплаты");
     paymentPromise = promise;
-
-    Log.d("Notification", "Tinkoff payment start");
 
     if (!options.hasKey("terminalKey")) {
       rejectPromise("Не передан terminalKey");
@@ -103,13 +100,45 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
       return;
     }
 
-    boolean testMode = false;
+    payFormStarter = PayFormActivity
+        .init(
+          options.getString("terminalKey"),
+          options.getString("password"),
+          options.getString("publicKey")
+        )
+
     if (options.hasKey("testMode")) {
-      testMode = options.getBoolean("testMode");
+      isTestMode = options.getBoolean("testMode");
     }
-    if (testMode) {
+    if (isTestMode) {
       Journal.setDebug(true);
       Journal.setDeveloperMode(true);
+    }
+  }
+
+  @ReactMethod
+  public void canApplePay(Promise promise) {
+    promise.resolve(false)
+  }
+
+  @ReactMethod
+  public void isPayWithAppleAvailable(Promise promise) {
+    promise.reject("Apple Pay не доступен")
+  }
+
+  @ReactMethod
+  public void Pay(
+    ReadableMap options,
+    final Promise promise
+  ) {
+    rejectPromise("Запущен новый процесс оплаты");
+    paymentPromise = promise;
+
+    Log.d("Notification", "Tinkoff payment start");
+
+    if (payFormStarter === null) {
+      rejectPromise("Не выполнен init");
+      return;
     }
 
     boolean isRecurrent, useSafeKeyboard;
@@ -155,12 +184,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
     Activity currentActivity = getCurrentActivity();
 
     try {
-      PayFormActivity
-        .init(
-          options.getString("terminalKey"),
-          options.getString("password"),
-          options.getString("publicKey")
-        )
+      payFormStarter
         .prepare(
           options.getString("OrderID"),
           Money.ofCoins(options.getInt("Amount")),
@@ -172,6 +196,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
           isRecurrent,
           useSafeKeyboard
         )
+        .setData(options.getMap("extraData"))
         .setCameraCardScanner(new CameraCardIOScanner())
         .setReceipt(createReceipt(options.getArray("Items"), options.getString("Email"), options.getString("Taxation")))
         .setGooglePayParams(googlePayParams)
@@ -185,22 +210,22 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   private Receipt createReceipt(ReadableArray jsItems, String email, String taxationName) throws Exception {
     Taxation taxation;
     switch (taxationName) {
-      case "OSN":
+      case "osn":
         taxation = Taxation.OSN;
         break;
-      case "USN_INCOME":
+      case "usn_income":
         taxation = Taxation.USN_INCOME;
         break;
-      case "USN_INCOME_OUTCOME":
+      case "usn_income_outcome":
         taxation = Taxation.USN_INCOME_OUTCOME;
         break;
-      case "ENVD":
+      case "envd":
         taxation = Taxation.ENVD;
         break;
-      case "ESN":
+      case "esn":
         taxation = Taxation.ESN;
         break;
-      case "PATENT":
+      case "patent":
         taxation = Taxation.PATENT;
         break;
       default:
@@ -213,28 +238,28 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
       Tax tax;
 
       switch (i.getString("Tax")) {
-        case "NONE":
+        case "none":
           tax = Tax.NONE;
           break;
-        case "VAT_0":
+        case "vat0":
           tax = Tax.VAT_0;
           break;
-        case "VAT_10":
+        case "vat10":
           tax = Tax.VAT_10;
           break;
-        case "VAT_18":
+        case "vat18":
           tax = Tax.VAT_18;
           break;
-        case "VAT_110":
+        case "vat110":
           tax = Tax.VAT_110;
           break;
-        case "VAT_118":
+        case "vat118":
           tax = Tax.VAT_118;
           break;
-        case "VAT_20":
+        case "vat20":
           tax = Tax.VAT_110;
           break;
-        case "VAT_120":
+        case "vat120":
           tax = Tax.VAT_118;
           break;
         default:
