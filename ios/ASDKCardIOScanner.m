@@ -44,7 +44,7 @@
 + (instancetype)scanner
 {
     ASDKCardIOScanner *scanner = [[ASDKCardIOScanner alloc] init];
-    
+
     return scanner;
 }
 
@@ -60,7 +60,7 @@
                 scanViewController.disableBlurWhenBackgrounding = YES;
                 scanViewController.navigationBarStyle = UIBarStyleBlack;
                 [self setupCardScaner:scanViewController];
-                
+
                 UIViewController *topVc = [ASDKCardIOScanner topMostController];
                 [topVc presentViewController:scanViewController animated:YES completion:nil];
             }
@@ -86,12 +86,12 @@
 + (UIViewController*)topMostController
 {
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-    
+
     while (topController.presentedViewController)
     {
         topController = topController.presentedViewController;
     }
-    
+
     return topController;
 }
 
@@ -108,7 +108,7 @@
 
         self.successBlock(self.cardRequisites);
     }
-    
+
     [self closePaymentViewController:paymentViewController];
 }
 
@@ -118,7 +118,7 @@
     {
         self.cancelBlock();
     }
-    
+
     [self closePaymentViewController:paymentViewController];
 }
 
@@ -128,7 +128,7 @@
 {
     self.successBlock = success;
     self.cancelBlock = cancel;
-    
+
     [self openCardScaner];
 }
 
