@@ -1,5 +1,8 @@
 package pro.rocketscience.tinkoff;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.content.Intent;
 
@@ -18,6 +21,7 @@ import com.google.android.gms.wallet.fragment.WalletFragmentStyle;
 import ru.tinkoff.acquiring.sdk.Money;
 import ru.tinkoff.acquiring.sdk.Receipt;
 import ru.tinkoff.acquiring.sdk.PayFormActivity;
+import ru.tinkoff.acquiring.sdk.PayFormStarter;
 //import ru.tinkoff.acquiring.sdk.OnPaymentListener;
 import ru.tinkoff.acquiring.sdk.GooglePayParams;
 import ru.tinkoff.acquiring.sdk.Item;
@@ -105,7 +109,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
           options.getString("terminalKey"),
           options.getString("password"),
           options.getString("publicKey")
-        )
+        );
 
     if (options.hasKey("testMode")) {
       isTestMode = options.getBoolean("testMode");
@@ -121,12 +125,12 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
 
   @ReactMethod
   public void canApplePay(Promise promise) {
-    promise.resolve(false)
+    promise.resolve(false);
   }
 
   @ReactMethod
   public void isPayWithAppleAvailable(Promise promise) {
-    promise.reject("Apple Pay не доступен")
+    promise.reject("Apple Pay не доступен");
   }
 
   @ReactMethod
@@ -139,7 +143,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
 
     Log.d("Notification", "Tinkoff payment start");
 
-    if (payFormStarter === null) {
+    if (payFormStarter == null) {
       rejectPromise("Не выполнен init");
       return;
     }
@@ -186,6 +190,18 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
 
     Activity currentActivity = getCurrentActivity();
 
+    HashMap<String, String> extraData = new HashMap<>();
+    if (options.hasKey("ExtraData")) {
+      ReadableMap edRn = options.getMap("ExtraData");
+      com.facebook.react.bridge.ReadableMapKeySetIterator iterator = edRn.keySetIterator();
+      if (iterator.hasNextKey()) {
+        while (iterator.hasNextKey()) {
+            String key = iterator.nextKey();
+            extraData.put(key, edRn.getString(key));
+        }
+      }
+    }
+
     try {
       payFormStarter
         .prepare(
@@ -199,7 +215,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
           isRecurrent,
           useSafeKeyboard
         )
-        .setData(options.getMap("ExtraData"))
+        .setData(extraData)
         .setCameraCardScanner(new CameraCardIOScanner())
         .setReceipt(createReceipt(options.getArray("Items"), options.getString("Email"), options.getString("Taxation")))
         .setGooglePayParams(googlePayParams)
