@@ -121,6 +121,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
       Journal.setDebug(false);
       Journal.setDeveloperMode(false);
     }
+    resolvePromise(0);
   }
 
   @ReactMethod
