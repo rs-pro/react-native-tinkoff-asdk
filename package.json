@@ -1,8 +1,9 @@
 {
   "name": "react-native-tinkoff-asdk",
-  "version": "0.1.0",
-  "description": "",
+  "version": "0.2.0",
+  "description": "Оплата через tinkoff asdk для приложений react native",
   "main": "index.js",
+  "homepage": "https://github.com/rs-pro/react-native-tinkoff-asdk",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
