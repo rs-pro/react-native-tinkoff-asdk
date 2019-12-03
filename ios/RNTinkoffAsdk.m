@@ -86,9 +86,11 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
 
     form.cardScanner = [ASDKCardIOScanner scanner];
 
+    NSNumber *amount = [options objectForKey:@"Amount"] / 100;
+
     [form presentPaymentFormFromViewController:rootViewController
       orderId: [options objectForKey:@"OrderID"]
-      amount: [options objectForKey:@"Amount"]
+      amount: amount
       title: [options objectForKey:@"PaymentName"]
       description: [options objectForKey:@"PaymentDesc"]
       cardId: [options objectForKey:@"CardID"]
@@ -132,8 +134,10 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
 		[postalAddress setISOCountryCode:[shipping objectForKey:@"ISOCountryCode"]];
 		shippingContact.postalAddress = [postalAddress copy];
 
+    NSNumber *amount = [options objectForKey:@"Amount"] / 100;
+
     [form payWithApplePayFromViewController:rootViewController
-      amount: [options objectForKey:@"Amount"]
+      amount: amount
       orderId: [options objectForKey:@"OrderID"]
       description: [options objectForKey:@"PaymentDesc"]
       customerKey: [options objectForKey:@"customerKey"]
