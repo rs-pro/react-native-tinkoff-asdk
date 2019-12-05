@@ -104,6 +104,7 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
       receiptData:@{
         @"Email": [options objectForKey:@"Email"],
         @"Taxation": [options objectForKey:@"Taxation"],
+        @"Tax": [options objectForKey:@"Taxation"],
         @"Items": [options objectForKey:@"Items"]
       }
       success: ^(ASDKPaymentInfo *paymentInfo) { NSLog(@"%@",paymentInfo); resolve(paymentInfo); }
