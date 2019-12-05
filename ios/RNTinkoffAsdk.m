@@ -42,7 +42,7 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)r
 	ASDKStringKeyCreator *stringKeyCreator = [[ASDKStringKeyCreator alloc] initWithPublicKeyString:publicKey];
 
 	acquiringSdk = [ASDKAcquiringSdk acquiringSdkWithTerminalKey:terminalKey
-                                 payType:@"О"
+                                 payType:nil
 																 password:password
 															   publicKeyDataSource:stringKeyCreator];
 
@@ -51,13 +51,15 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)r
     isTestMode = [RCTConvert BOOL:options[@"testMode"]];
   }
   if (isTestMode) {
+    NSLog(@"init tinkoff test mode");
     [acquiringSdk setDebug:YES];
     [acquiringSdk setTestDomain:YES];
   } else {
-    [acquiringSdk setDebug:NO];
-    [acquiringSdk setTestDomain:NO];
+    NSLog(@"init tinkoff prod mode");
+    //[acquiringSdk setDebug:NO];
+    //[acquiringSdk setTestDomain:NO];
   }
-	[acquiringSdk setLogger:nil];
+  //[acquiringSdk setLogger:nil];
 }
 
 RCT_EXPORT_METHOD(isPayWithAppleAvailable:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
@@ -81,7 +83,7 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
 
     UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
 
-
+    NSLog(@"%@",acquiringSdk);
     ASDKPaymentFormStarter * form = [ASDKPaymentFormStarter paymentFormStarterWithAcquiringSdk:acquiringSdk];
 
     form.cardScanner = [ASDKCardIOScanner scanner];
@@ -90,12 +92,19 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
     double amountRub = (amountCents.doubleValue / 100);
     NSNumber *amount = @(amountRub);
 
-    NSDictionary receiptData = @{
-      @"Email": [options objectForKey:@"Email"],
-      @"Phone": [options objectForKey:@"Phone"],
-      @"Taxation": [options objectForKey:@"Taxation"],
-      @"Items": [options objectForKey:@"Items"]
-    }
+    NSArray *items = [options objectForKey:@"Items"];
+
+    NSDictionary *receiptData = @{
+                                  @"Email": [options objectForKey:@"Email"],
+                                  @"Phone": [options objectForKey:@"Phone"],
+                                  @"Taxation": [options objectForKey:@"Taxation"],
+                                  @"Items": items};
+    NSDictionary *additionalPaymentData = @{
+                                  @"Email": [options objectForKey:@"Email"],
+                                  @"Phone": [options objectForKey:@"Phone"]};
+
+    //NSLog(@"%@",receiptData);
+    //NSLog(@"%@",additionalPaymentData);
 
     [form presentPaymentFormFromViewController:rootViewController
       orderId: [options objectForKey:@"OrderID"]
@@ -107,11 +116,15 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
       customerKey: [options objectForKey:@"CustomerKey"]
       recurrent: NO
       makeCharge: YES
-      additionalPaymentData: [options objectForKey:@"ExtraData"]
+      additionalPaymentData: additionalPaymentData
       receiptData: receiptData
+      //receiptData:nil
+      //success:^(NSNumber *paymentId) { NSLog(@"%@",paymentId); resolve(paymentId); }
       success: ^(ASDKPaymentInfo *paymentInfo) { NSLog(@"%@",paymentInfo); resolve(paymentInfo); }
       cancelled: ^{ NSLog(@"cancelled"); reject(@"payment_cancelled", @"Платеж отменен", error); }
-      error: ^(ASDKAcquringSdkError *error) { NSLog(@"%@",error); reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
+      error: ^(ASDKAcquringSdkError *error) {
+          NSLog(@"%@",error);
+          reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
     ];
 }
 
@@ -147,12 +160,11 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
     double amountRub = (amountCents.doubleValue / 100);
     NSNumber *amount = @(amountRub);
 
-    NSDictionary receiptData = @{
+    NSDictionary *receiptData = @{
       @"Email": [options objectForKey:@"Email"],
       @"Phone": [options objectForKey:@"Phone"],
       @"Taxation": [options objectForKey:@"Taxation"],
-      @"Items": [options objectForKey:@"Items"]
-    }
+      @"Items": [options objectForKey:@"Items"]};
 
     [form payWithApplePayFromViewController:rootViewController
       amount: amount
@@ -172,7 +184,7 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
       shopsReceiptsData:nil
       success: ^(ASDKPaymentInfo *paymentInfo) { NSLog(@"%@",paymentInfo); resolve(paymentInfo); }
       cancelled: ^{ reject(@"payment_cancelled", @"Платеж отменен", error); }
-      error: ^(ASDKAcquringSdkError *error) { reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
+      error: ^(ASDKAcquringSdkError *error) { NSLog(@"%@",error); reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
     ];
 }
 
