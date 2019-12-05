@@ -159,6 +159,7 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
       additionalPaymentData: [options objectForKey:@"extraData"]
       receiptData:@{
         @"Email": [options objectForKey:@"Email"],
+        @"Phone": [options objectForKey:@"Phone"],
         @"Taxation": [options objectForKey:@"Taxation"],
         @"Items": [options objectForKey:@"Items"]
       }
