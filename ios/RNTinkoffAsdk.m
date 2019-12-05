@@ -101,7 +101,11 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
       recurrent: NO
       makeCharge: YES
       additionalPaymentData: [options objectForKey:@"ExtraData"]
-      receiptData: [options objectForKey:@"Items"]
+      receiptData:@{
+        @"Email": [options objectForKey:@"Email"],
+        @"Taxation": [options objectForKey:@"Taxation"],
+        @"Items": [options objectForKey:@"Items"]
+      }
       success: ^(ASDKPaymentInfo *paymentInfo) { resolve(paymentInfo); }
       cancelled: ^{ reject(@"payment_cancelled", @"Платеж отменен", error); }
       error: ^(ASDKAcquringSdkError *error) { reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
@@ -153,7 +157,11 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
       shippingEditableFields:PKAddressFieldPostalAddress|PKAddressFieldName|PKAddressFieldEmail|PKAddressFieldPhone //PKAddressFieldNone
       recurrent: NO
       additionalPaymentData: [options objectForKey:@"extraData"]
-      receiptData: [options objectForKey:@"Items"]
+      receiptData:@{
+        @"Email": [options objectForKey:@"Email"],
+        @"Taxation": [options objectForKey:@"Taxation"],
+        @"Items": [options objectForKey:@"Items"]
+      }
       shopsData:nil
       shopsReceiptsData:nil
       success: ^(ASDKPaymentInfo *paymentInfo) { resolve(paymentInfo); }
