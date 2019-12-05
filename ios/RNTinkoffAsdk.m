@@ -107,8 +107,8 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
         @"Items": [options objectForKey:@"Items"]
       }
       success: ^(ASDKPaymentInfo *paymentInfo) { NSLog(@"%@",paymentInfo); resolve(paymentInfo); }
-      cancelled: ^{ reject(@"payment_cancelled", @"Платеж отменен", error); }
-      error: ^(ASDKAcquringSdkError *error) { reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
+      cancelled: ^{ NSLog(@"cancelled"); reject(@"payment_cancelled", @"Платеж отменен", error); }
+      error: ^(ASDKAcquringSdkError *error) { NSLog(@"%@",error); reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
     ];
 }
 
