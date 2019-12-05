@@ -90,6 +90,13 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
     double amountRub = (amountCents.doubleValue / 100);
     NSNumber *amount = @(amountRub);
 
+    NSDictionary receiptData = @{
+      @"Email": [options objectForKey:@"Email"],
+      @"Phone": [options objectForKey:@"Phone"],
+      @"Taxation": [options objectForKey:@"Taxation"],
+      @"Items": [options objectForKey:@"Items"]
+    }
+
     [form presentPaymentFormFromViewController:rootViewController
       orderId: [options objectForKey:@"OrderID"]
       amount: amount
@@ -101,12 +108,7 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
       recurrent: NO
       makeCharge: YES
       additionalPaymentData: [options objectForKey:@"ExtraData"]
-      receiptData:@{
-        @"Email": [options objectForKey:@"Email"],
-        @"Taxation": [options objectForKey:@"Taxation"],
-        @"Tax": [options objectForKey:@"Taxation"],
-        @"Items": [options objectForKey:@"Items"]
-      }
+      receiptData: receiptData
       success: ^(ASDKPaymentInfo *paymentInfo) { NSLog(@"%@",paymentInfo); resolve(paymentInfo); }
       cancelled: ^{ NSLog(@"cancelled"); reject(@"payment_cancelled", @"Платеж отменен", error); }
       error: ^(ASDKAcquringSdkError *error) { NSLog(@"%@",error); reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
@@ -145,6 +147,13 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
     double amountRub = (amountCents.doubleValue / 100);
     NSNumber *amount = @(amountRub);
 
+    NSDictionary receiptData = @{
+      @"Email": [options objectForKey:@"Email"],
+      @"Phone": [options objectForKey:@"Phone"],
+      @"Taxation": [options objectForKey:@"Taxation"],
+      @"Items": [options objectForKey:@"Items"]
+    }
+
     [form payWithApplePayFromViewController:rootViewController
       amount: amount
       orderId: [options objectForKey:@"OrderID"]
@@ -158,12 +167,7 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
       shippingEditableFields:PKAddressFieldPostalAddress|PKAddressFieldName|PKAddressFieldEmail|PKAddressFieldPhone //PKAddressFieldNone
       recurrent: NO
       additionalPaymentData: [options objectForKey:@"extraData"]
-      receiptData:@{
-        @"Email": [options objectForKey:@"Email"],
-        @"Phone": [options objectForKey:@"Phone"],
-        @"Taxation": [options objectForKey:@"Taxation"],
-        @"Items": [options objectForKey:@"Items"]
-      }
+      receiptData: receiptData
       shopsData:nil
       shopsReceiptsData:nil
       success: ^(ASDKPaymentInfo *paymentInfo) { NSLog(@"%@",paymentInfo); resolve(paymentInfo); }
