@@ -69,14 +69,14 @@ const payment = TinkoffASDK.Pay({
       Price: 10000, // В копейках (100 рублей)
       Quantity: 2,
       Amount: 20000, // В копейках (200 рублей)
-      Taxation: "usn_income",
+      Tax: "usn_income",
     },
     {
       Name: "test 2",
       Price: 12345,
       Quantity: 1,
       Amount: 12345,
-      Taxation: "usn_income",
+      Tax: "usn_income",
     }
   ]
 })

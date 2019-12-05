@@ -257,7 +257,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
       ReadableMap i = jsItems.getMap(index);
       Tax tax;
 
-      switch (i.getString("Taxation")) {
+      switch (i.getString("Tax")) {
         case "none":
           tax = Tax.NONE;
           break;
