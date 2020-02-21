@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ActivityEventListener;
@@ -13,6 +14,10 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+
+import com.facebook.react.bridge.Arguments;
+
 import com.facebook.react.bridge.Promise;
 
 import com.google.android.gms.wallet.WalletConstants;
@@ -56,16 +61,41 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   @Override
   public void onActivityResult(final Activity activity, int requestCode, int resultCode, Intent data) {
     Log.d("Notification", "Tinkoff payment complete");
+    WritableMap resp = Arguments.createMap();
+    resp.putInt("code", resultCode);
+
+    WritableMap idata = Arguments.createMap();
+    if (data == null) {
+      rejectPromise("payment cancelled");
+      return;
+    }
+
+    Bundle bundle = data.getExtras();
+    if (bundle != null) {
+      for (String key : bundle.keySet()) {
+        Log.e("RNTASDK", key + " : " + (bundle.get(key) != null ? bundle.get(key) : "NULL"));
+      }
+    }
+
+    resp.putMap("data", idata);
 
     if (requestCode == REQUEST_CODE_PAY) {
       if (resultCode == 500) {
           rejectPromise("Ошибка");
       }
-      resolvePromise(resultCode);
+      resolvePromise(resp);
     }
   }
 
   private void resolvePromise(int result) {
+    if (paymentPromise != null) {
+      paymentPromise.resolve(result);
+      paymentPromise = null;
+    }
+  }
+
+  private void resolvePromise(WritableMap result) {
+
     if (paymentPromise != null) {
       paymentPromise.resolve(result);
       paymentPromise = null;
@@ -125,13 +155,8 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   }
 
   @ReactMethod
-  public void canApplePay(Promise promise) {
-    promise.resolve(false);
-  }
-
-  @ReactMethod
   public void isPayWithAppleAvailable(Promise promise) {
-    promise.reject("Apple Pay не доступен");
+    promise.resolve(false);
   }
 
   @ReactMethod
