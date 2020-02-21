@@ -60,11 +60,10 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
 
   @Override
   public void onActivityResult(final Activity activity, int requestCode, int resultCode, Intent data) {
-    Log.d("Notification", "Tinkoff payment complete");
+    Log.d("Tinkoff", "Tinkoff payment complete");
     WritableMap resp = Arguments.createMap();
     resp.putInt("code", resultCode);
 
-    WritableMap idata = Arguments.createMap();
     if (data == null) {
       rejectPromise("payment cancelled");
       return;
@@ -72,18 +71,22 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
 
     Bundle bundle = data.getExtras();
     if (bundle != null) {
+      resp.putString("payment_id", bundle.get("payment_id") + "");
+      resp.putString("payment_card_id", bundle.get("payment_card_id") + "");
       for (String key : bundle.keySet()) {
-        Log.e("RNTASDK", key + " : " + (bundle.get(key) != null ? bundle.get(key) : "NULL"));
+        Log.e("Tinkoff", key + " : " + (bundle.get(key) != null ? bundle.get(key) : "NULL"));
       }
+    } else {
+      rejectPromise("no payment data");
+      return;
     }
-
-    resp.putMap("data", idata);
 
     if (requestCode == REQUEST_CODE_PAY) {
       if (resultCode == 500) {
-          rejectPromise("Ошибка");
+        rejectPromise("Ошибка");
+      } else {
+        resolvePromise(resp);
       }
-      resolvePromise(resp);
     }
   }
 
