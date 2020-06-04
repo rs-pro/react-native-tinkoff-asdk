@@ -62,6 +62,58 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)r
   //[acquiringSdk setLogger:nil];
 }
 
+RCT_EXPORT_METHOD(GetCardList:(NSDictionary*) options
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    NSError* error = nil;
+
+    if (acquiringSdk == nil) {
+        reject(@"init_not_done", @"Не выполнен init", error);
+        return;
+    };
+
+    [acquiringSdk getCardListWithCustomerKey:[options objectForKey:@"CustomerKey"]
+                                            success:^(ASDKGetCardListResponse *response) { resolve(response); }
+                                            failure:^(ASDKAcquringSdkError *error) {
+                                                NSLog(@"%@",error);
+                                                reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error);
+                                            }
+    ];
+}
+
+RCT_EXPORT_METHOD(AddCard:(NSDictionary*) options
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    NSError* error = nil;
+
+    if (acquiringSdk == nil) {
+        reject(@"init_not_done", @"Не выполнен init", error);
+        return;
+    };
+    UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
+    
+    NSLog(@"%@",acquiringSdk);
+    ASDKPaymentFormStarter * form = [ASDKPaymentFormStarter paymentFormStarterWithAcquiringSdk:acquiringSdk];
+    
+    form.cardScanner = [ASDKCardIOScanner scanner];
+    [form presentAttachFormFromViewController:rootViewController
+                                    formTitle:@"Новая карта"
+                                   formHeader:@"Сохраните данные карты"
+                                  description:@"и оплачивайте, не вводя реквизиты"
+                                        email:[options objectForKey:@"Email"]
+                                cardCheckType:[options objectForKey:@"CardCheckType"]
+                                  customerKey:[options objectForKey:@"CustomerKey"]
+                               additionalData:[options objectForKey:@"AdditionalData"]
+                                      success:^(ASDKResponseAttachCard *result) { resolve(result); }
+                                     cancelled:^{
+                                         NSLog(@"cancelled"); reject(@"add_card_cancelled", @"Добавление карты отменено", error);
+                                     }
+                                        error:^(ASDKAcquringSdkError *error) {
+                                            NSLog(@"%@",error);
+                                            reject([NSString stringWithFormat:@"%ld", [error code]], [NSString stringWithFormat:@"%@", error], error); }
+     ];
+}
+
 RCT_EXPORT_METHOD(isPayWithAppleAvailable:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     if ([ASDKPaymentFormStarter isPayWithAppleAvailable]) {
         resolve(@TRUE);
