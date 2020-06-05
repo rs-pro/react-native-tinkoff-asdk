@@ -11,8 +11,53 @@
 #import <React/RCTConvert.h>
 #endif
 
+#import <objc/runtime.h>
+
 @implementation RNTinkoffAsdk
 
+- (NSMutableArray*)arrayToDictionary:array
+{
+    NSMutableArray *dict = [[NSMutableArray alloc] init];
+    [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [dict addObject:[self objectToDictionary:obj]];
+    }];
+    
+    return dict;
+}
+
+- (NSDictionary *)objectToDictionary:object {
+    
+    unsigned int count = 0;
+    
+    NSMutableDictionary *dictionary = [NSMutableDictionary new];
+    objc_property_t *properties = class_copyPropertyList([object class], &count);
+    
+    for (int i = 0; i < count; i++) {
+
+        NSString *key = [NSString stringWithUTF8String:property_getName(properties[i])];
+        id value = [object valueForKey:key];
+        
+        if (value == nil) {
+            // nothing todo
+        }
+        else if ([value isKindOfClass:[NSNumber class]]
+            || [value isKindOfClass:[NSString class]]
+            || [value isKindOfClass:[NSDictionary class]]) {
+        // TODO: extend to other types
+            [dictionary setObject:value forKey:key];
+        }
+        else if ([value isKindOfClass:[NSObject class]]) {
+            [dictionary setObject:[self objectToDictionary:object] forKey:key];
+        }
+        else {
+            NSLog(@"Invalid type for %@ (%@)", NSStringFromClass([object class]), key);
+        }
+    }
+    
+    free(properties);
+    
+    return dictionary;
+}
 - (dispatch_queue_t)methodQueue
 {
     return dispatch_get_main_queue();
@@ -47,7 +92,7 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)r
 															   publicKeyDataSource:stringKeyCreator];
 
   bool isTestMode = false;
-  if (![options objectForKey:@"testMode"]) {
+  if ([options objectForKey:@"testMode"]) {
     isTestMode = [RCTConvert BOOL:options[@"testMode"]];
   }
   if (isTestMode) {
@@ -60,6 +105,58 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)r
     //[acquiringSdk setTestDomain:NO];
   }
   //[acquiringSdk setLogger:nil];
+}
+
+RCT_EXPORT_METHOD(GetCardList:(NSDictionary*) options
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    NSError* error = nil;
+
+    if (acquiringSdk == nil) {
+        reject(@"init_not_done", @"Не выполнен init", error);
+        return;
+    };
+
+    [acquiringSdk getCardListWithCustomerKey:[options objectForKey:@"CustomerKey"]
+                                     success:^(ASDKGetCardListResponse *response) { resolve([self arrayToDictionary:[response cards]]); }
+                                            failure:^(ASDKAcquringSdkError *error) {
+                                                NSLog(@"%@",error);
+                                                reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error);
+                                            }
+    ];
+}
+
+RCT_EXPORT_METHOD(AddCard:(NSDictionary*) options
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    NSError* error = nil;
+
+    if (acquiringSdk == nil) {
+        reject(@"init_not_done", @"Не выполнен init", error);
+        return;
+    };
+    UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
+    
+    NSLog(@"%@",acquiringSdk);
+    ASDKPaymentFormStarter * form = [ASDKPaymentFormStarter paymentFormStarterWithAcquiringSdk:acquiringSdk];
+    
+    form.cardScanner = [ASDKCardIOScanner scanner];
+    [form presentAttachFormFromViewController:rootViewController
+                                    formTitle:@"Новая карта"
+                                   formHeader:@"Сохраните данные карты"
+                                  description:@"и оплачивайте, не вводя реквизиты"
+                                        email:[options objectForKey:@"Email"]
+                                cardCheckType:[options objectForKey:@"CardCheckType"]
+                                  customerKey:[options objectForKey:@"CustomerKey"]
+                               additionalData:[options objectForKey:@"AdditionalData"]
+                                      success:^(ASDKResponseAttachCard *result) { resolve(result); }
+                                     cancelled:^{
+                                         NSLog(@"cancelled"); reject(@"add_card_cancelled", @"Добавление карты отменено", error);
+                                     }
+                                        error:^(ASDKAcquringSdkError *error) {
+                                            NSLog(@"%@",error);
+                                            reject([NSString stringWithFormat:@"%ld", [error code]], [NSString stringWithFormat:@"%@", error], error); }
+     ];
 }
 
 RCT_EXPORT_METHOD(isPayWithAppleAvailable:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
@@ -114,8 +211,8 @@ RCT_EXPORT_METHOD(Pay:(NSDictionary*) options
       cardId: [options objectForKey:@"CardID"]
       email: [options objectForKey:@"Email"]
       customerKey: [options objectForKey:@"CustomerKey"]
-      recurrent: NO
-      makeCharge: YES
+      recurrent: [options objectForKey:@"IsRecurrent"]
+      makeCharge: [options objectForKey:@"MakeCharge"]
       additionalPaymentData: additionalPaymentData
       receiptData: receiptData
       //receiptData:nil
