@@ -126,6 +126,24 @@ RCT_EXPORT_METHOD(GetCardList:(NSDictionary*) options
     ];
 }
 
+RCT_EXPORT_METHOD(RemoveCard:(NSDictionary*) options
+              resolve:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject) {
+    NSError* error = nil;
+    
+    if (acquiringSdk == nil) {
+        reject(@"init_not_done", @"Не выполнен init", error);
+        return;
+    };
+    
+    [acquiringSdk removeCardWithCustomerKey:[options objectForKey:@"CustomerKey"]
+                                    cardId:[options objectForKey:@"CardId"]
+                                    success:^(ASDKRemoveCardResponse *response) { resolve([self objectToDictionary:response]); }
+                                   failure:^(ASDKAcquringSdkError *error) { NSLog(@"%@",error);
+                                   reject([NSString stringWithFormat:@"%ld", [error code]], [error errorMessage], error); }
+    ];
+}
+
 RCT_EXPORT_METHOD(AddCard:(NSDictionary*) options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
