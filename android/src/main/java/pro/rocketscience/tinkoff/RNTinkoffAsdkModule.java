@@ -15,6 +15,10 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableNativeArray;
 
 import com.facebook.react.bridge.Arguments;
 
@@ -24,9 +28,12 @@ import com.google.android.gms.wallet.WalletConstants;
 import com.google.android.gms.wallet.fragment.WalletFragmentStyle;
 
 import ru.tinkoff.acquiring.sdk.Money;
+import ru.tinkoff.acquiring.sdk.Card;
 import ru.tinkoff.acquiring.sdk.Receipt;
 import ru.tinkoff.acquiring.sdk.PayFormActivity;
 import ru.tinkoff.acquiring.sdk.PayFormStarter;
+import ru.tinkoff.acquiring.sdk.AttachCardFormActivity;
+import ru.tinkoff.acquiring.sdk.AttachCardFormStarter;
 //import ru.tinkoff.acquiring.sdk.OnPaymentListener;
 import ru.tinkoff.acquiring.sdk.GooglePayParams;
 import ru.tinkoff.acquiring.sdk.Item;
@@ -34,6 +41,7 @@ import ru.tinkoff.acquiring.sdk.Tax;
 import ru.tinkoff.acquiring.sdk.Taxation;
 import ru.tinkoff.acquiring.sdk.card.io.CameraCardIOScanner;
 import ru.tinkoff.acquiring.sdk.Journal;
+import ru.tinkoff.acquiring.sdk.AcquiringSdk;
 
 import android.util.Log;
 
@@ -43,6 +51,8 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   private static final int REQUEST_CODE_PAY = 1;
   private boolean isTestMode = false;
   private PayFormStarter payFormStarter;
+  private AttachCardFormStarter attachCardFormStarter;
+  private AcquiringSdk acquiringSdk;
 
   public RNTinkoffAsdkModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -105,6 +115,14 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
     }
   }
 
+  private void resolvePromise(WritableArray result) {
+
+    if (paymentPromise != null) {
+      paymentPromise.resolve(result);
+      paymentPromise = null;
+    }
+  }
+
   private void rejectPromise(String reason) {
     if (paymentPromise != null) {
       paymentPromise.reject(reason);
@@ -143,6 +161,19 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
           options.getString("password"),
           options.getString("publicKey")
         );
+
+    attachCardFormStarter = AttachCardFormActivity
+        .init(
+          options.getString("terminalKey"),
+          options.getString("password"),
+          options.getString("publicKey")
+        );
+
+    acquiringSdk = new AcquiringSdk(
+      options.getString("terminalKey"),
+      options.getString("password"),
+      options.getString("publicKey")
+    );
 
     if (options.hasKey("testMode")) {
       isTestMode = options.getBoolean("testMode");
@@ -250,6 +281,89 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
         .setGooglePayParams(googlePayParams)
         .setCustomerKey(options.getString("CustomerKey"))
         .startActivityForResult(currentActivity, REQUEST_CODE_PAY);
+    } catch (Exception e) {
+      rejectPromise(e);
+    }
+  }
+
+  @ReactMethod
+  public void GetCardList(ReadableMap options, final Promise promise) {
+    Log.d("Notification", "GetCardList start");
+    paymentPromise = promise;
+
+    if (acquiringSdk == null) {
+      rejectPromise("Не выполнен init");
+      return;
+    }
+
+    try {
+
+      String customerKey = options.hasKey("CustomerKey") ? options.getString("CustomerKey") : "";
+
+      Card[] cards = acquiringSdk.getCardList(customerKey);
+      WritableArray data = new WritableNativeArray();
+      for(Card card : cards) {
+        WritableMap cardMap = new WritableNativeMap();
+        cardMap.putString("pan", card.getPan());
+        cardMap.putString("cardId", card.getCardId());
+        cardMap.putString("rebillId", card.getRebillId());
+        cardMap.putInt("status", card.getStatus().ordinal());
+        data.pushMap(cardMap);
+      }
+
+      resolvePromise(data);
+    } catch (Exception e) {
+      rejectPromise(e);
+    }
+  }
+
+  @ReactMethod
+  public void RemoveCard(ReadableMap options, final Promise promise) {
+    Log.d("Notification", "RemoveCard start");
+    paymentPromise = promise;
+
+    if (acquiringSdk == null) {
+      rejectPromise("Не выполнен init");
+      return;
+    }
+
+    try {
+
+      String customerKey = options.hasKey("CustomerKey") ? options.getString("CustomerKey") : "";
+      String cardId = options.hasKey("CardId") ? options.getString("CardId") : "";
+
+      boolean result = acquiringSdk.removeCard(customerKey, cardId);
+      resolvePromise(0);
+    } catch (Exception e) {
+      rejectPromise(e);
+    }
+
+  }
+
+  @ReactMethod
+  public void AddCard(ReadableMap options, final Promise promise) {
+    Log.d("Notification", "AddCard start");
+
+
+    if (attachCardFormStarter == null) {
+      rejectPromise("Не выполнен init");
+      return;
+    }
+
+    Activity currentActivity = getCurrentActivity();
+
+    String checkType = options.hasKey("CardCheckType") ? options.getString("CardCheckType") : "NO";
+    boolean useSafeKeyboard = options.hasKey("UseSafeKeyboard") ? options.getBoolean("UseSafeKeyboard") : true;
+
+    try {
+      attachCardFormStarter
+              .prepare(
+                options.getString("CustomerKey"),
+                checkType,
+                useSafeKeyboard,
+                options.getString("Email")
+              )
+              .startActivityForResult(currentActivity, REQUEST_CODE_PAY);
     } catch (Exception e) {
       rejectPromise(e);
     }
