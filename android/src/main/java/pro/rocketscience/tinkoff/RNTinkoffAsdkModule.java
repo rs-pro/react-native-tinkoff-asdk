@@ -108,7 +108,6 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   }
 
   private void resolvePromise(WritableMap result) {
-
     if (paymentPromise != null) {
       paymentPromise.resolve(result);
       paymentPromise = null;
@@ -116,7 +115,6 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   }
 
   private void resolvePromise(WritableArray result) {
-
     if (paymentPromise != null) {
       paymentPromise.resolve(result);
       paymentPromise = null;
@@ -289,6 +287,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   @ReactMethod
   public void GetCardList(ReadableMap options, final Promise promise) {
     Log.d("Notification", "GetCardList start");
+    rejectPromise("Запущен новый процесс оплаты");
     paymentPromise = promise;
 
     if (acquiringSdk == null) {
@@ -320,6 +319,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   @ReactMethod
   public void RemoveCard(ReadableMap options, final Promise promise) {
     Log.d("Notification", "RemoveCard start");
+    rejectPromise("Запущен новый процесс оплаты");
     paymentPromise = promise;
 
     if (acquiringSdk == null) {
@@ -343,7 +343,8 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   @ReactMethod
   public void AddCard(ReadableMap options, final Promise promise) {
     Log.d("Notification", "AddCard start");
-
+    rejectPromise("Запущен новый процесс оплаты");
+    paymentPromise = promise;
 
     if (attachCardFormStarter == null) {
       rejectPromise("Не выполнен init");
