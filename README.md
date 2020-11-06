@@ -103,6 +103,8 @@ if (hasApplePay) {
       City: "Москва",
       PostalCode: "125212",
       ISOCountryCode: "643",
+      givenName: "имя",
+      familyName: "фамилия"
     }
     // Все то же что в простом Pay
   })

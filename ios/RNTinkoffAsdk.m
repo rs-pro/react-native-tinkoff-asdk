@@ -21,22 +21,22 @@
     [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         [dict addObject:[self objectToDictionary:obj]];
     }];
-    
+
     return dict;
 }
 
 - (NSDictionary *)objectToDictionary:object {
-    
+
     unsigned int count = 0;
-    
+
     NSMutableDictionary *dictionary = [NSMutableDictionary new];
     objc_property_t *properties = class_copyPropertyList([object class], &count);
-    
+
     for (int i = 0; i < count; i++) {
 
         NSString *key = [NSString stringWithUTF8String:property_getName(properties[i])];
         id value = [object valueForKey:key];
-        
+
         if (value == nil) {
             // nothing todo
         }
@@ -53,9 +53,9 @@
             NSLog(@"Invalid type for %@ (%@)", NSStringFromClass([object class]), key);
         }
     }
-    
+
     free(properties);
-    
+
     return dictionary;
 }
 - (dispatch_queue_t)methodQueue
@@ -130,12 +130,12 @@ RCT_EXPORT_METHOD(RemoveCard:(NSDictionary*) options
               resolve:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject) {
     NSError* error = nil;
-    
+
     if (acquiringSdk == nil) {
         reject(@"init_not_done", @"Не выполнен init", error);
         return;
     };
-    
+
     [acquiringSdk removeCardWithCustomerKey:[options objectForKey:@"CustomerKey"]
                                     cardId:[options objectForKey:@"CardId"]
                                     success:^(ASDKRemoveCardResponse *response) { resolve([self objectToDictionary:response]); }
@@ -154,10 +154,10 @@ RCT_EXPORT_METHOD(AddCard:(NSDictionary*) options
         return;
     };
     UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-    
+
     NSLog(@"%@",acquiringSdk);
     ASDKPaymentFormStarter * form = [ASDKPaymentFormStarter paymentFormStarterWithAcquiringSdk:acquiringSdk];
-    
+
     form.cardScanner = [ASDKCardIOScanner scanner];
     [form presentAttachFormFromViewController:rootViewController
                                     formTitle:@"Новая карта"
@@ -263,6 +263,12 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
 		PKContact *shippingContact = [[PKContact alloc] init];
 		shippingContact.emailAddress = [options objectForKey:@"Email"];
 		shippingContact.phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:[options objectForKey:@"Phone"]];
+
+    NSPersonNameComponents *name = [[NSPersonNameComponents alloc] init];
+    name.givenName = [shipping objectForKey:@"givenName"];
+    name.familyName = [shipping objectForKey:@"familyName"];
+    shippingContact.name = name;
+
 		CNMutablePostalAddress *postalAddress = [[CNMutablePostalAddress alloc] init];
 		[postalAddress setStreet:[shipping objectForKey:@"Street"]];
 		[postalAddress setCountry:[shipping objectForKey:@"Country"]];
