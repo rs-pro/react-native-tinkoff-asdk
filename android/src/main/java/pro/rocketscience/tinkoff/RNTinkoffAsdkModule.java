@@ -333,7 +333,11 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
       String cardId = options.hasKey("CardId") ? options.getString("CardId") : "";
 
       boolean result = acquiringSdk.removeCard(customerKey, cardId);
-      resolvePromise(0);
+      if (result) {
+        resolvePromise(0);
+      } else {
+        rejectPromise("Не удалось удалить карту");
+      }
     } catch (Exception e) {
       rejectPromise(e);
     }
