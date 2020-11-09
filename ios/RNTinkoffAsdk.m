@@ -291,7 +291,7 @@ RCT_EXPORT_METHOD(ApplePay:(NSDictionary*) options
       amount: amount
       orderId: [options objectForKey:@"OrderID"]
       description: [options objectForKey:@"PaymentDesc"]
-      customerKey: [options objectForKey:@"customerKey"]
+      customerKey: [options objectForKey:@"CustomerKey"]
       sendEmail: YES
       email: [options objectForKey:@"email"]
       appleMerchantId: [options objectForKey:@"appleMerchantId"]
