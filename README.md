@@ -39,7 +39,8 @@ TinkoffASDK.init({
     "AO8pxJBAxFojioVu422RWaQvoOMuZzhqUEpxA9T62lN8t3jj9QfHXaL4Ht8kRaa2JlaURtPJB5iB\n" +
     "M+4pBDnqObNS5NFcXOxloZX4+M8zXaFh70jqWfiCzjyhaFg3rTPE2ClseOdS7DLwfB2kNP3K0GuP\n" +
     "uLzsMwIDAQAB",
-  testMode: true
+  testMode: true,
+  debugLog: true
 });
 
 const payment = TinkoffASDK.Pay({

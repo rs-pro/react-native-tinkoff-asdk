@@ -92,18 +92,29 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)r
 															   publicKeyDataSource:stringKeyCreator];
 
   bool isTestMode = false;
+  bool isDebugLog = false;
+
   if ([options objectForKey:@"testMode"]) {
     isTestMode = [RCTConvert BOOL:options[@"testMode"]];
   }
+  if ([options objectForKey:@"debugLog"]) {
+    isDebugLog = [RCTConvert BOOL:options[@"debugLog"]];
+  }
+
   if (isTestMode) {
     NSLog(@"init tinkoff test mode");
-    [acquiringSdk setDebug:YES];
     [acquiringSdk setTestDomain:YES];
   } else {
     NSLog(@"init tinkoff prod mode");
-    //[acquiringSdk setDebug:NO];
-    //[acquiringSdk setTestDomain:NO];
+    [acquiringSdk setTestDomain:NO];
   }
+
+  if (isDebugLog) {
+    [acquiringSdk setDebug:YES];
+  } else {
+    [acquiringSdk setDebug:NO];
+  }
+
   //[acquiringSdk setLogger:nil];
 }
 

@@ -49,7 +49,10 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
   private final ReactApplicationContext reactContext;
   private Promise paymentPromise;
   private static final int REQUEST_CODE_PAY = 1;
+
   private boolean isTestMode = false;
+  private boolean isDebugLog = false;
+
   private PayFormStarter payFormStarter;
   private AttachCardFormStarter attachCardFormStarter;
   private AcquiringSdk acquiringSdk;
@@ -176,13 +179,22 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
     if (options.hasKey("testMode")) {
       isTestMode = options.getBoolean("testMode");
     }
+    if (options.hasKey("debugLog")) {
+      isDebugLog = options.getBoolean("debugLog");
+    }
+
     if (isTestMode) {
-      Journal.setDebug(true);
       Journal.setDeveloperMode(true);
     } else {
-      Journal.setDebug(false);
       Journal.setDeveloperMode(false);
     }
+
+    if (isDebugLog) {
+      Journal.setDebug(true);
+    } else {
+      Journal.setDebug(false);
+    }
+
     resolvePromise(0);
   }
 
