@@ -240,7 +240,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
         .setPhoneRequired(params.getBoolean("PhoneRequired"))
         .setEnvironment(googlePayEnvironment)
         //.setTheme(WalletConstants.THEME_DARK)
-        .setBuyButtonAppearance(WalletFragmentStyle.BuyButtonAppearance.ANDROID_PAY_LIGHT)
+        //.setBuyButtonAppearance(WalletFragmentStyle.BuyButtonAppearance.ANDROID_PAY_LIGHT)
         .build();
     } else {
       googlePayParams = null;
