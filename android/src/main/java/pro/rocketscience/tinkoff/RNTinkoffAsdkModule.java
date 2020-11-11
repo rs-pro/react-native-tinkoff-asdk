@@ -368,6 +368,7 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
                 useSafeKeyboard,
                 options.getString("Email")
               )
+              .setTheme(R.style.AcquiringThemeAttachCard)
               .startActivityForResult(currentActivity, REQUEST_CODE_PAY);
     } catch (Exception e) {
       rejectPromise(e);
