@@ -33,11 +33,10 @@ repositories {
 dependencies {
     implementation 'com.facebook.react:react-native:+'
 
-    implementation 'ru.tinkoff.acquiring:ui:1.5.1'
-    implementation 'ru.tinkoff.acquiring:card-io:1.5.1'
+    implementation 'ru.tinkoff.acquiring:ui:1.7.3'
+    implementation 'ru.tinkoff.acquiring:card-io:1.7.3'
     //implementation 'com.android.support:support-v4:23.0.1'
 
     //implementation 'ru.tinkoff.acquiring:ui:$latestVersion'
     //implementation 'ru.tinkoff.acquiring:card-io:$latestVersion'
 }
-
