@@ -25,7 +25,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 
 import com.google.android.gms.wallet.WalletConstants;
-import com.google.android.gms.wallet.fragment.WalletFragmentStyle;
+//import com.google.android.gms.wallet.fragment.WalletFragmentStyle;
 
 import ru.tinkoff.acquiring.sdk.Money;
 import ru.tinkoff.acquiring.sdk.Card;
@@ -235,11 +235,11 @@ public class RNTinkoffAsdkModule extends ReactContextBaseJavaModule implements A
       }
 
       googlePayParams = new GooglePayParams.Builder()
-        .setMerchantName(params.getString("MerchantName"))
+        //.setMerchantName(params.getString("MerchantName"))
         .setAddressRequired(params.getBoolean("AddressRequired"))
         .setPhoneRequired(params.getBoolean("PhoneRequired"))
         .setEnvironment(googlePayEnvironment)
-        //.setTheme(WalletConstants.THEME_DARK)
+        .setTheme(WalletConstants.THEME_DARK)
         //.setBuyButtonAppearance(WalletFragmentStyle.BuyButtonAppearance.ANDROID_PAY_LIGHT)
         .build();
     } else {

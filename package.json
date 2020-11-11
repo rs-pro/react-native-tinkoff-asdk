@@ -1,6 +1,6 @@
 {
   "name": "react-native-tinkoff-asdk",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Оплата через tinkoff asdk для приложений react native",
   "main": "index.js",
   "homepage": "https://github.com/rs-pro/react-native-tinkoff-asdk",
