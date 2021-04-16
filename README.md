@@ -103,7 +103,7 @@ if (hasApplePay) {
       Country: "Россия",
       City: "Москва",
       PostalCode: "125212",
-      ISOCountryCode: "643",
+      ISOCountryCode: "ru",
       givenName: "имя",
       familyName: "фамилия"
     }
